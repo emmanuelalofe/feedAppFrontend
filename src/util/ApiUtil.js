@@ -48,45 +48,44 @@ export const registerApi = async (
 
 export const verifyEmailApi = async (token) => {
     let response = frameResponse();
-    
+
     try {
         const url = `${API_BASE_URL}/user/verify/email`;
         const apiResponse = await axios.get(url, {
-          headers: { Authorization: frameToken(token) },
+            headers: { Authorization: frameToken(token) },
         });
         if (apiResponse.status === 200) {
-          response = frameResponse(1, apiResponse.data);
+            response = frameResponse(1, apiResponse.data);
         }
     } catch (err) {
         if (err.response) {
-          response = frameResponse(0, err.response.data.message);
+            response = frameResponse(0, err.response.data.message);
         }
         console.log(err);
     } finally {
         return response;
     }
-  };
+};
 
-  export const loginApi = async (username, password) => {
-      let response = frameResponse();
-      
-      try {
+export const loginApi = async (username, password) => {
+    let response = frameResponse();
+
+    try {
         const url = `${API_BASE_URL}/user/login`;
         const apiResponse = await axios.post(url, { username, password });
         if (apiResponse.status === 200) {
-          const payLoad = {
-            userData: apiResponse.data,
-            token: apiResponse.headers.authorization,
-          };
-          response = frameResponse(1, payLoad);
+            const payLoad = {
+                userData: apiResponse.data,
+                token: apiResponse.headers.authorization,
+            };
+            response = frameResponse(1, payLoad);
         }
     } catch (err) {
         if (err.response) {
-          response = frameResponse(0, err.response.data.message);
+            response = frameResponse(0, err.response.data.message);
         }
         console.log(err);
     } finally {
         return response;
     }
-  };
-  
+};
