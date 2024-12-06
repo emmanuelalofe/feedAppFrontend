@@ -5,7 +5,7 @@ import Moment from "react-moment";
 
 import { AppContext } from "../context/applicationContext";
 
-import { addFeedMetaDataApi } from "../util/ApiUtil";
+import { addFeedMetaDataApi, deleteFeedApi } from "../util/ApiUtil";
 
 const FeedCard = ({
     feedId,
@@ -16,7 +16,8 @@ const FeedCard = ({
     firstName,
     lastName,
     profilePicture,
-    feedMetaData = []
+    feedMetaData = [],
+    loadOnDelete = undefined
 }) => {
     const formikRef = useRef();
 
@@ -127,6 +128,20 @@ const FeedCard = ({
         comment: Yup.string().required("Required"),
     });
 
+    const deleteFeed = async () => {
+        if (!isFetching) {
+            setIsFetching(true);
+            const apiResponse = await deleteFeedApi(
+                token,
+                feedId
+            );
+            if (apiResponse.status === 1) {
+                loadOnDelete(0);
+                setIsFetching(false);
+            }
+        }
+    };
+
     return (
         <div className="bg-white shadow rounded-lg mb-5">
             <div className="flex w-full border-t border-gray-100">
@@ -153,7 +168,25 @@ const FeedCard = ({
                     </div>
                 </div>
             </div>
-            {/* {#DeleteFeedButton Section} */}
+            {loadOnDelete && (
+          <div
+            className="flex flex-col justify-center m-5"
+            onClick={deleteFeed}
+          >
+            <span className="transition ease-out duration-300 hover:bg-gray-50 bg-gray-100 h-8 px-2 py-2 text-center rounded-full text-gray-100 cursor-pointer">
+              <svg
+                className="h-4 w-4 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M7 21q-.825 0-1.413-.588T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.588 1.413T17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z"
+                />
+              </svg>
+            </span>
+          </div>
+)}
             <div className="border-b border-gray-100"></div>
             <div className="text-gray-400 font-medium text-sm mb-7 mt-6 mx-3 px-2">
                 <img className="rounded w-full" src={picture} />
@@ -210,47 +243,47 @@ const FeedCard = ({
                 )}
             </div>
             <Formik
-                    innerRef={formikRef}
-                    initialValues={{
+                innerRef={formikRef}
+                initialValues={{
                     comment: "",
-                    }}
-                    validationSchema={AddCommentSchema}
-                    onSubmit={addComment}
-                >
-                    {() => (
+                }}
+                validationSchema={AddCommentSchema}
+                onSubmit={addComment}
+            >
+                {() => (
                     <Form>
                         <div className="relative flex items-center self-center w-full max-w-l p-4 overflow-hidden text-gray-600 focus-within:text-gray-400">
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-6">
-                            <button
-                            type="submit"
-                            className="p-1 focus:outline-none focus:shadow-none hover:text-purple-500"
-                            >
-                            <svg
-                                className="ml-1"
-                                viewBox="0 0 24 24"
-                                width="16"
-                                height="16"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
-                            </button>
-                        </span>
-                        <Field
-                            id="comment"
-                            name="comment"
-                            type="search"
-                            className="w-full py-2 pl-4 pr-10 text-sm bg-gray-100 border border-transparent appearance-none rounded-tg placeholder-gray-400 focus:bg-white focus:outline-none focus:border-purple-500 focus:text-gray-900 focus:shadow-outline-blue custom-br-25"
-                            placeholder="Post a comment..."
-                        />
+                            <span className="absolute inset-y-0 right-0 flex items-center pr-6">
+                                <button
+                                    type="submit"
+                                    className="p-1 focus:outline-none focus:shadow-none hover:text-purple-500"
+                                >
+                                    <svg
+                                        className="ml-1"
+                                        viewBox="0 0 24 24"
+                                        width="16"
+                                        height="16"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                    </svg>
+                                </button>
+                            </span>
+                            <Field
+                                id="comment"
+                                name="comment"
+                                type="search"
+                                className="w-full py-2 pl-4 pr-10 text-sm bg-gray-100 border border-transparent appearance-none rounded-tg placeholder-gray-400 focus:bg-white focus:outline-none focus:border-purple-500 focus:text-gray-900 focus:shadow-outline-blue custom-br-25"
+                                placeholder="Post a comment..."
+                            />
                         </div>
                     </Form>
-                    )}
+                )}
             </Formik>
         </div>
     );
